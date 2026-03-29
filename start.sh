@@ -39,4 +39,4 @@ ollama pull "$MODEL"
 echo "    Model ready."
 
 echo "==> [4/4] Starting Express API..."
-node src/server.js
+node server.js
