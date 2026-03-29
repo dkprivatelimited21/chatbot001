@@ -1,21 +1,16 @@
 services:
   - type: web
     name: smartchat-api
-    env: node
+    env: docker              # ← use Docker runtime, not node
     region: oregon
-    plan: standard          # Need at least Standard ($25/mo) for enough RAM + CPU
-                            # Free tier (512MB RAM) is too small for Mistral 7B
-                            # Standard gives 2GB RAM — enough for Q4 quantized model
-    buildCommand: npm install
-    startCommand: bash start.sh
+    plan: standard           # 2GB RAM minimum for Mistral 7B
     healthCheckPath: /health
 
-    # Persist the Ollama model cache across deploys
-    # Without this, Mistral (~4GB) re-downloads on every deploy
+    # Persist Ollama model cache — avoids re-downloading 4GB on every deploy
     disk:
       name: ollama-models
       mountPath: /root/.ollama
-      sizeGB: 10            # Mistral Q4 is ~4.1GB; 10GB leaves room for updates
+      sizeGB: 10
 
     envVars:
       - key: MODEL
@@ -25,8 +20,8 @@ services:
       - key: RATE_LIMIT_RPM
         value: "20"
       - key: RAPIDAPI_PROXY_SECRET
-        sync: false         # Enter in Render dashboard after RapidAPI setup
+        sync: false
       - key: DIRECT_API_KEY
-        sync: false         # Optional: for testing outside RapidAPI
+        sync: false
       - key: NODE_ENV
         value: production
